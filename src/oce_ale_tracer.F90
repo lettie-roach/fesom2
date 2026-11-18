@@ -1710,6 +1710,9 @@ subroutine diff_ver_part_impl_ale(tr_num, dynamics, tracers, ice, partit, mesh)
             tr(nzmin)= tr(nzmin)+impl_bc(n)
         end if
 
+        ! save surface
+        tr(nzmin) = tr(nzmin) + impl_bc(n)
+        tracers%work%tra_surf(n,tr_num) = impl_bc(n)/dt
         !_______________________________________________________________________
         ! The forward sweep algorithm to solve the three-diagonal matrix
         ! problem

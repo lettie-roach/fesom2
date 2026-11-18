@@ -1903,7 +1903,7 @@ CASE ('TSi_assimDia          ')
 !    end do
 
 CASE ('otracers  ')
-    do j=3, tracers%num_tracers
+    do j=1, tracers%num_tracers
     write (id_string, "(I4.4)") tracers%data(j)%ID
 #if defined(__recom)
       if (tracers%data(j)%ID==1001) then
@@ -2117,6 +2117,7 @@ CASE ('otracers  ')
       !   (tracer * layer thickness per second). For each layer:
       !   *_tendency = *_hor_adv + *_ver_adv + *_tra_diff_part_hor_redi + *_tra_diff_part_ver_redi_expl
       !              + *_tra_diff_part_ver_impl (or *_ver_expl) + *_recom_sms + *_bf + *_sink
+      ! Of tra_diff_part_ver_impl, also output the part of that term which is surface fluxes
       if (tracers%data(j)%ltra_diag) then
          select case (tracers%data(j)%ID)
             case (1001)
@@ -2151,6 +2152,10 @@ CASE ('otracers  ')
                  'Vertical diffusion of '//trim(bname)//' (Explicit)', '[mmol/m2/s]', tracers%work%tra_diff_part_ver_expl(:,:,j), &
                  io_list(i)%freq, io_list(i)%unit, io_list(i)%precision, partit, mesh)
          end if
+         call def_stream(mesh%nod2D, partit%myDim_nod2D, trim(bname)//'_surf', &
+                'Surface boundary flux of '//trim(bname)//' into the top layer', '[tra units/m2/s]', &
+                tracers%work%tra_surf(1:partit%myDim_nod2D,j), &
+                io_list(i)%freq, io_list(i)%unit, io_list(i)%precision, partit, mesh)
 #if defined(__recom)
          call def_stream((/mesh%nl-1, mesh%nod2D/), (/mesh%nl-1, partit%myDim_nod2D/), trim(bname)//'_recom_sms', &
               'REcoM sources minus sinks of '//trim(bname), '[mmol/m2/s]', tracers%work%tra_recom_sms(:,:,j), &

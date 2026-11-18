@@ -517,6 +517,8 @@ SUBROUTINE tracer_init(tracers, partit, mesh)
         tracers%work%tra_sink     = 0.0_WP
         tracers%work%tracer_old   = 0.0_WP
         tracers%work%tra_tendency = 0.0_WP
+        allocate(tracers%work%tra_surf(node_size,num_tracers))
+        tracers%work%tra_surf = 0.0_WP
     end if
 END SUBROUTINE tracer_init
 !
