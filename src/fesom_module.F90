@@ -93,7 +93,7 @@ use cpl_yac_driver
 #endif
 
 ! Transient tracers
-use mod_transit, only: year_ce, r14c_nh, r14c_tz, r14c_sh, r14c_ti, xCO2_ti, xf11_nh, xf11_sh, xf12_nh, xf12_sh, xsf6_nh, xsf6_sh, ti_transit, anthro_transit
+!use mod_transit, only: year_ce, r14c_nh, r14c_tz, r14c_sh, r14c_ti, xCO2_ti, xf11_nh, xf11_sh, xf12_nh, xf12_sh, xsf6_nh, xsf6_sh, ti_transit, anthro_transit
 
   implicit none
     
@@ -1267,6 +1267,7 @@ contains
 #endif
         !___ltra_diag: total tracer tendency over the step [mmol/m2/s]
         call tracer_tendency(f%tracers, f%partit, f%mesh)
+        call tracer_budget_ml(f%tracers, f%partit, f%mesh)
         if (use_transit) then
           ! Prevent negative concentrations of SF6, CFC-11 and CFC-12 during the first years (inital values are zero)
           do tr_num=1, f%tracers%num_tracers

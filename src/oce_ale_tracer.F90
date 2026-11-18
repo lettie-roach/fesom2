@@ -1288,6 +1288,9 @@ subroutine diff_ver_part_impl_ale(tr_num, dynamics, tracers, ice, partit, mesh)
 #endif
     end if
     
+    ! save surface flux for tracer budget
+    if (tracers%data(tr_num)%ltra_diag) tracers%work%tra_surf(n,tr_num) = impl_bc(n)/dt
+    
     ! solve equation diffusion equation implicite part:
     ! -->   h^(n+0.5)* (T^(n+0.5)-Tstar) = dt*( K_33*d/dz*(T^(n+0.5)-Tstar) + K_33*d/dz*Tstar )
     ! -->   Tnew = T^(n+0.5)-Tstar
@@ -1710,10 +1713,7 @@ subroutine diff_ver_part_impl_ale(tr_num, dynamics, tracers, ice, partit, mesh)
             tr(nzmin)= tr(nzmin)+impl_bc(n)
         end if
 
-        ! save surface
-        tr(nzmin) = tr(nzmin) + impl_bc(n)
-        tracers%work%tra_surf(n,tr_num) = impl_bc(n)/dt
-        !_______________________________________________________________________
+       !_______________________________________________________________________
         ! The forward sweep algorithm to solve the three-diagonal matrix
         ! problem
         !

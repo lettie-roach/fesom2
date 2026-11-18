@@ -62,7 +62,15 @@ real(kind=WP), allocatable                    :: tra_benthic(:,:,:)   ! benthic 
 real(kind=WP), allocatable                    :: tra_sink(:,:,:)      ! REcoM sinking: in the water column and into the benthos
 real(kind=WP_full), allocatable               :: tracer_old(:,:,:)    ! c*h at the start of the step (WP_full: the tendency is a small difference of large numbers)
 real(kind=WP), allocatable                    :: tra_tendency(:,:,:)  ! total tendency over the step
-real(kind=WP), allocatable                    :: tra_surf(:,:)   ! surface flux into top layer, (node, tracer) [tracer*m/s]
+real(kind=WP), allocatable                    :: tra_surf(:,:)        ! surface flux into top layer, (node, tracer) [tracer*m/s]
+
+! mixed-layer budget
+real(kind=WP), allocatable :: ml_h(:)                       ! ML thickness used [m]
+real(kind=WP), allocatable :: ml_tmean(:,:)                 ! ML-mean tracer
+real(kind=WP), allocatable :: ml_tend(:,:), ml_hor_adv(:,:), ml_ver_adv(:,:)
+real(kind=WP), allocatable :: ml_hor_diff(:,:), ml_ver_diff(:,:), ml_resid(:,:)
+
+
 
 ! The fct part
 real(kind=WP),allocatable,dimension(:,:)      :: fct_LO          ! Low-order solution

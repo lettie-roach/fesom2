@@ -629,6 +629,8 @@ subroutine ini_mean_io(ice, dynamics, tracers, partit, mesh)
     integer                   :: sel_dmoc=0, sel_trgrd_xyz=0, sel_dvd=0, sel_redi=0
     character(len=10)         :: id_string
     character(len=20)         :: bname   ! ltra_diag budget stream prefix (DIN, DIC, Alk, DSi or tra_<ID>)
+    character(len=20)         :: trunits   ! ltra_diag budget - tracer units
+
 
     type(t_mesh), intent(in) , target :: mesh
     type(t_partit), intent(inout), target :: partit
@@ -2120,42 +2122,49 @@ CASE ('otracers  ')
       ! Of tra_diff_part_ver_impl, also output the part of that term which is surface fluxes
       if (tracers%data(j)%ltra_diag) then
          select case (tracers%data(j)%ID)
+            case (1)
+               bname = 'temp'
+               trunits = 'degC'
+            case (2)
+               bname = 'salt'
+               trunits = 'psu'
             case (1001)
                bname = 'DIN'
+               trunits = 'mmol/m3'
             case (1002)
                bname = 'DIC'
+               trunits = 'mmol/m3'
             case (1003)
                bname = 'Alk'
+               trunits = 'mmol/m3'
             case (1018)
                bname = 'DSi'
+               trunits = 'mmol/m3'
             case default
                bname = 'tra_'//trim(id_string)
+               trunits = '(tr units)'
          end select
          call def_stream((/mesh%nl-1, mesh%nod2D/), (/mesh%nl-1, partit%myDim_nod2D/), trim(bname)//'_hor_adv', &
-              'Horizontal advection of '//trim(bname)//' (LO + anti-diffusive)', '[mmol/m2/s]', tracers%work%tra_advhoriz(:,:,j), &
+              'Horizontal advection of '//trim(bname)//' (LO + anti-diffusive)', '['//trim(trunits)//' * m/s]', tracers%work%tra_advhoriz(:,:,j), &
               io_list(i)%freq, io_list(i)%unit, io_list(i)%precision, partit, mesh)
          call def_stream((/mesh%nl-1, mesh%nod2D/), (/mesh%nl-1, partit%myDim_nod2D/), trim(bname)//'_ver_adv', &
-              'Vertical advection of '//trim(bname)//' (LO incl. implicit w_split part + anti-diffusive)', '[mmol/m2/s]', tracers%work%tra_advvert(:,:,j), &
+              'Vertical advection of '//trim(bname)//' (LO incl. implicit w_split part + anti-diffusive)', '['//trim(trunits)//' * m/s]', tracers%work%tra_advvert(:,:,j), &
               io_list(i)%freq, io_list(i)%unit, io_list(i)%precision, partit, mesh)
          call def_stream((/mesh%nl-1, mesh%nod2D/), (/mesh%nl-1, partit%myDim_nod2D/), trim(bname)//'_tra_diff_part_hor_redi', &
-              'Horizontal diffusion of '//trim(bname)//' (includes Redi diffusivity if Redi=.true.)', '[mmol/m2/s]', tracers%work%tra_diff_part_hor_redi(:,:,j), &
+              'Horizontal diffusion of '//trim(bname)//' (includes Redi diffusivity if Redi=.true.)', '['//trim(trunits)//' * m/s]', tracers%work%tra_diff_part_hor_redi(:,:,j), &
               io_list(i)%freq, io_list(i)%unit, io_list(i)%precision, partit, mesh)
          call def_stream((/mesh%nl-1, mesh%nod2D/), (/mesh%nl-1, partit%myDim_nod2D/), trim(bname)//'_tra_diff_part_ver_redi_expl', &
-              'Projection of horizontal Redi diffusivity onto vertical for '//trim(bname)//' (Explicit)', '[mmol/m2/s]', tracers%work%tra_diff_part_ver_redi_expl(:,:,j), &
+              'Projection of horizontal Redi diffusivity onto vertical for '//trim(bname)//' (Explicit)', '['//trim(trunits)//' * m/s]', tracers%work%tra_diff_part_ver_redi_expl(:,:,j), &
               io_list(i)%freq, io_list(i)%unit, io_list(i)%precision, partit, mesh)
          if (tracers%data(j)%i_vert_diff) then
             call def_stream((/mesh%nl-1, mesh%nod2D/), (/mesh%nl-1, partit%myDim_nod2D/), trim(bname)//'_tra_diff_part_ver_impl', &
-                 'Vertical diffusion of '//trim(bname)//' (Implicit; includes the surface boundary flux)', '[mmol/m2/s]', tracers%work%tra_diff_part_ver_impl(:,:,j), &
+                 'Vertical diffusion of '//trim(bname)//' (Implicit; includes the surface boundary flux)', '['//trim(trunits)//' * m/s]', tracers%work%tra_diff_part_ver_impl(:,:,j), &
                  io_list(i)%freq, io_list(i)%unit, io_list(i)%precision, partit, mesh)
          else
             call def_stream((/mesh%nl-1, mesh%nod2D/), (/mesh%nl-1, partit%myDim_nod2D/), trim(bname)//'_tra_diff_part_ver_expl', &
-                 'Vertical diffusion of '//trim(bname)//' (Explicit)', '[mmol/m2/s]', tracers%work%tra_diff_part_ver_expl(:,:,j), &
+                 'Vertical diffusion of '//trim(bname)//' (Explicit)', '['//trim(trunits)//' * m/s]', tracers%work%tra_diff_part_ver_expl(:,:,j), &
                  io_list(i)%freq, io_list(i)%unit, io_list(i)%precision, partit, mesh)
          end if
-         call def_stream(mesh%nod2D, partit%myDim_nod2D, trim(bname)//'_surf', &
-                'Surface boundary flux of '//trim(bname)//' into the top layer', '[tra units/m2/s]', &
-                tracers%work%tra_surf(1:partit%myDim_nod2D,j), &
-                io_list(i)%freq, io_list(i)%unit, io_list(i)%precision, partit, mesh)
 #if defined(__recom)
          call def_stream((/mesh%nl-1, mesh%nod2D/), (/mesh%nl-1, partit%myDim_nod2D/), trim(bname)//'_recom_sms', &
               'REcoM sources minus sinks of '//trim(bname), '[mmol/m2/s]', tracers%work%tra_recom_sms(:,:,j), &
@@ -2168,8 +2177,51 @@ CASE ('otracers  ')
               tracers%work%tra_sink(:,:,j), io_list(i)%freq, io_list(i)%unit, io_list(i)%precision, partit, mesh)
 #endif
          call def_stream((/mesh%nl-1, mesh%nod2D/), (/mesh%nl-1, partit%myDim_nod2D/), trim(bname)//'_tendency', &
-              'Total tendency of '//trim(bname), '[mmol/m2/s]', tracers%work%tra_tendency(:,:,j), &
+              'Total tendency of '//trim(bname), '['//trim(trunits)//' * m/s]', tracers%work%tra_tendency(:,:,j), &
               io_list(i)%freq, io_list(i)%unit, io_list(i)%precision, partit, mesh)
+
+! 2d outputs
+         call def_stream(mesh%nod2D, partit%myDim_nod2D, trim(bname)//'_surf', &
+                'Surface boundary flux of '//trim(bname)//' into the top layer', '['//trim(trunits)//'* m/s]', &
+                tracers%work%tra_surf(1:partit%myDim_nod2D,j), &
+                io_list(i)%freq, io_list(i)%unit, io_list(i)%precision, partit, mesh)
+
+        call def_stream(mesh%nod2D, partit%myDim_nod2D, trim(bname)//'_ml_tend', &
+             'Mixed-layer (MLD3) mean of the layer tendency tra_tendency of '//trim(bname), '['//trim(trunits)//'/s]', &
+             tracers%work%ml_tend(1:partit%myDim_nod2D,j), &
+             io_list(i)%freq, io_list(i)%unit, io_list(i)%precision, partit, mesh)
+
+        call def_stream(mesh%nod2D, partit%myDim_nod2D, trim(bname)//'_ml_hor_adv', &
+             'Mixed-layer (MLD3) mean horizontal advection tra_advhoriz of '//trim(bname), '['//trim(trunits)//'/s]', &
+             tracers%work%ml_hor_adv(1:partit%myDim_nod2D,j), &
+             io_list(i)%freq, io_list(i)%unit, io_list(i)%precision, partit, mesh)
+
+        call def_stream(mesh%nod2D, partit%myDim_nod2D, trim(bname)//'_ml_ver_adv', &
+             'Mixed-layer (MLD3) mean vertical advection tra_advvert of '//trim(bname), '['//trim(trunits)//'/s]', &
+             tracers%work%ml_ver_adv(1:partit%myDim_nod2D,j), &
+             io_list(i)%freq, io_list(i)%unit, io_list(i)%precision, partit, mesh)
+
+        call def_stream(mesh%nod2D, partit%myDim_nod2D, trim(bname)//'_ml_redi_diff', &
+             'Mixed-layer (MLD3) mean Redi diffusion tracers%work%tra_diff_part_hor_redi+tracers%work%tra_diff_part_ver_redi_expl of '//trim(bname), '['//trim(trunits)//'/s]', &
+             tracers%work%ml_hor_diff(1:partit%myDim_nod2D,j), &
+             io_list(i)%freq, io_list(i)%unit, io_list(i)%precision, partit, mesh)
+
+        call def_stream(mesh%nod2D, partit%myDim_nod2D, trim(bname)//'_ml_ver_diff', &
+             'Mixed-layer (MLD3) mean vertical diffusion expl or impl (including surface flux) of '//trim(bname), '['//trim(trunits)//'/s]', &
+             tracers%work%ml_ver_diff(1:partit%myDim_nod2D,j), &
+             io_list(i)%freq, io_list(i)%unit, io_list(i)%precision, partit, mesh)
+
+        call def_stream(mesh%nod2D, partit%myDim_nod2D, trim(bname)//'_ml_resid', &
+             'Mixed-layer (MLD3) budget residual of '//trim(bname)//' (tendency minus sum of terms)', '['//trim(trunits)//'/s]', &
+             tracers%work%ml_resid(1:partit%myDim_nod2D,j), &
+             io_list(i)%freq, io_list(i)%unit, io_list(i)%precision, partit, mesh)
+
+        ! ML-mean tracer 
+        call def_stream(mesh%nod2D, partit%myDim_nod2D, trim(bname)//'_ml_mean', &
+             'Mixed-layer (MLD3) mean '//trim(bname), '['//trim(trunits)//']', &
+             tracers%work%ml_tmean(1:partit%myDim_nod2D,j), &
+             io_list(i)%freq, io_list(i)%unit, io_list(i)%precision, partit, mesh)
+
       end if
 
     end do
