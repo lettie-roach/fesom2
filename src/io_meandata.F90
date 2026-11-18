@@ -2203,7 +2203,7 @@ CASE ('otracers  ')
 
         call def_stream(mesh%nod2D, partit%myDim_nod2D, trim(bname)//'_ml_redi_diff', &
              'Mixed-layer (MLD3) mean Redi diffusion tracers%work%tra_diff_part_hor_redi+tracers%work%tra_diff_part_ver_redi_expl of '//trim(bname), '['//trim(trunits)//'/s]', &
-             tracers%work%ml_hor_diff(1:partit%myDim_nod2D,j), &
+             tracers%work%ml_redi_diff(1:partit%myDim_nod2D,j), &
              io_list(i)%freq, io_list(i)%unit, io_list(i)%precision, partit, mesh)
 
         call def_stream(mesh%nod2D, partit%myDim_nod2D, trim(bname)//'_ml_ver_diff', &

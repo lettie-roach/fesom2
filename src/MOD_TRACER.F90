@@ -68,7 +68,7 @@ real(kind=WP), allocatable                    :: tra_surf(:,:)        ! surface 
 real(kind=WP), allocatable :: ml_h(:)                       ! ML thickness used [m]
 real(kind=WP), allocatable :: ml_tmean(:,:)                 ! ML-mean tracer
 real(kind=WP), allocatable :: ml_tend(:,:), ml_hor_adv(:,:), ml_ver_adv(:,:)
-real(kind=WP), allocatable :: ml_hor_diff(:,:), ml_ver_diff(:,:), ml_resid(:,:)
+real(kind=WP), allocatable :: ml_redi_diff(:,:), ml_ver_diff(:,:), ml_resid(:,:)
 
 
 
