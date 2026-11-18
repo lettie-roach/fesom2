@@ -111,7 +111,7 @@ subroutine tracer_budget_ml(tracers, partit, mesh)
             tracers%work%ml_redi_diff(n,tr_num) = s_hdiff/hml
             tracers%work%ml_ver_diff(n,tr_num) = s_vdiff/hml
             tracers%work%ml_resid(n,tr_num)    = (s_tend - (s_hadv + s_vadv + s_hdiff + s_vdiff + s_sms))/hml
-
+            tracers%work%ml_surf(n,tr_num) = tracers%work%tra_surf(n,tr_num)/hml
          else
                 tracers%work%ml_h(n) = 0.0_WP
                 tracers%work%ml_tmean(n,tr_num) = 0.0_WP
@@ -121,6 +121,7 @@ subroutine tracer_budget_ml(tracers, partit, mesh)
                 tracers%work%ml_redi_diff(n,tr_num) = 0.0_WP
                 tracers%work%ml_ver_diff(n,tr_num) = 0.0_WP
                 tracers%work%ml_resid(n,tr_num)    = 0.0_WP
+                tracers%work%ml_surf(n,tr_num)    = 0.0_WP
          end if
       end do
    end do

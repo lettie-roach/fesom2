@@ -2186,6 +2186,11 @@ CASE ('otracers  ')
                 tracers%work%tra_surf(1:partit%myDim_nod2D,j), &
                 io_list(i)%freq, io_list(i)%unit, io_list(i)%precision, partit, mesh)
 
+        call def_stream(mesh%nod2D, partit%myDim_nod2D, trim(bname)//'_ml_surf', &
+                'Mixed-layer (MLD3) mean surface forcing of '//trim(bname), '['//trim(trunits)//'/s]', &
+                tracers%work%ml_surf(1:partit%myDim_nod2D,j), &
+                io_list(i)%freq, io_list(i)%unit, io_list(i)%precision, partit, mesh)
+
         call def_stream(mesh%nod2D, partit%myDim_nod2D, trim(bname)//'_ml_tend', &
              'Mixed-layer (MLD3) mean of the layer tendency tra_tendency of '//trim(bname), '['//trim(trunits)//'/s]', &
              tracers%work%ml_tend(1:partit%myDim_nod2D,j), &

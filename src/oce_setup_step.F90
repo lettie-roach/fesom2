@@ -524,9 +524,11 @@ SUBROUTINE tracer_init(tracers, partit, mesh)
         allocate(tracers%work%ml_hor_adv(node_size,num_tracers), tracers%work%ml_ver_adv(node_size,num_tracers))
         allocate(tracers%work%ml_redi_diff(node_size,num_tracers), tracers%work%ml_ver_diff(node_size,num_tracers))
         allocate(tracers%work%ml_resid(node_size,num_tracers))
+        allocate(tracers%work%ml_surf(node_size,num_tracers))
         tracers%work%ml_h = 0.0_WP; tracers%work%ml_tmean = 0.0_WP; tracers%work%ml_tend = 0.0_WP
         tracers%work%ml_hor_adv = 0.0_WP; tracers%work%ml_ver_adv = 0.0_WP
         tracers%work%ml_redi_diff = 0.0_WP; tracers%work%ml_ver_diff = 0.0_WP; tracers%work%ml_resid = 0.0_WP
+        tracers%work%ml_surf = 0.0_WP
     end if
 END SUBROUTINE tracer_init
 !
